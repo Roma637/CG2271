@@ -71,62 +71,26 @@ void stopMotors() {
 //    TPM2_C1V = 0;
 //}
 
-void forward(int left_ratio, int right_ratio) { //speed can be retrieved from UART and broken down from 0 to 1 to represent duty cycle??
+void forward(int left_ratio, int right_ratio, int speed) { //speed can be retrieved from UART and broken down from 0 to 1 to represent duty cycle??
   // left_ratio and right_ratio range 0-100 
 		TPM1->MOD = MOD_VAL;
-    TPM1_C0V = (int) (MOD_VAL * right_ratio/100);
+    TPM1_C0V = (int) (MOD_VAL * right_ratio/100)*speed/100;
     TPM1_C1V = 0;
       
     TPM2->MOD = MOD_VAL;
-    TPM2_C0V = (int) (MOD_VAL * left_ratio/100);
+    TPM2_C0V = (int) (MOD_VAL * left_ratio/100)*speed/100;
     TPM2_C1V = 0;
 }
 
-void reverse(int speed) {
+void reverse(int left_ratio, int right_ratio,int speed) {
     TPM1->MOD = MOD_VAL;
     TPM1_C0V = 0;
-    TPM1_C1V = (int) (MOD_VAL / speed);
+    TPM1_C1V = (int) (MOD_VAL * right_ratio /100)*speed/100;
       
     TPM2->MOD = MOD_VAL;
     TPM2_C0V = 0;
-    TPM2_C1V = (int) (MOD_VAL / speed);
+    TPM2_C1V = (int) (MOD_VAL * left_ratio /100)*speed/100;
 }
 
-void left(int speed) {
-	//left reverse
-	TPM1->MOD = MOD_VAL;
-	TPM1_C0V = 0;
-	TPM1_C1V = (int) (MOD_VAL / speed);
-	
-	//right forward
-	TPM2->MOD = MOD_VAL;
-	TPM2_C0V = (int) (MOD_VAL / speed);
-	TPM2_C1V = 0;
-}
 
-void right(int speed) {
-	//left forward
-	TPM1->MOD = MOD_VAL;
-	TPM1_C0V = (int) (MOD_VAL / speed);
-	TPM1_C1V = 0;
-	
-	//right reverse
-	TPM2->MOD = MOD_VAL;
-	TPM2_C0V = 0;
-	TPM2_C1V = (int) (MOD_VAL / speed);
-}
 
-//int main() {
-//	initMotor();
-//    
-//    while (1) {
-//        forward(0.1);  // Move forward at half speed
-//        delay(0x2000);
-//        forward(1.0);  // Move forward at half speed
-//        delay(0x2000);
-//        reverse(4); // Move backward at quarter speed
-//        delay(2000);
-//				stopMotors();
-//				delay(2000);
-//    }
-//}

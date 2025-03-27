@@ -62,6 +62,9 @@ void stationaryModeGreen(void)
 {
   PTC->PDOR |= (MASK(LED_G3) | MASK(LED_G4) | MASK(LED_G5) | MASK(LED_G6) | MASK(LED_G7) | MASK(LED_G8) | MASK(LED_G9) | MASK(LED_G10));
 }
+void clearAll(void){
+	    PTC->PDOR &= (~MASK(LED_G3) & ~MASK(LED_G4) & ~MASK(LED_G5) & ~MASK(LED_G6) & ~MASK(LED_G7) & ~MASK(LED_G8) & ~MASK(LED_G9) & ~MASK(LED_G10));
+}
 
 void stationaryModeRed(void)
 {

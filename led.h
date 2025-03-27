@@ -19,6 +19,7 @@
 #define GREEN_MOVE 250 //milliseconds
 
 void greenFlash(void);
+void clearAll(void);
 void initLED(void);
 void runningModeRed(void);
 void stationaryModeRed(void);
