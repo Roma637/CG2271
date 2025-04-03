@@ -61,16 +61,6 @@ void stopMotors() {
 	TPM2_C1V = 0; //stop right bk
 }
 
-//void forward(int speed) { //speed can be retrieved from UART and broken down from 0 to 1 to represent duty cycle??
-//    TPM1->MOD = MOD_VAL;
-//    TPM1_C0V = (int) (MOD_VAL / speed);
-//    TPM1_C1V = 0;
-//      
-//    TPM2->MOD = MOD_VAL;
-//    TPM2_C0V = (int) (MOD_VAL / speed);
-//    TPM2_C1V = 0;
-//}
-
 void forward(int left_ratio, int right_ratio, int speed) { //speed can be retrieved from UART and broken down from 0 to 1 to represent duty cycle??
   // left_ratio and right_ratio range 0-100 
 		TPM1->MOD = MOD_VAL;
