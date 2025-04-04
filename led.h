@@ -1,5 +1,5 @@
 // Rear Red LED Pin Config
-#define LED_R12 12 // PortA Pin 12
+#define LED_R2 2 // PortC Pin 2
 
 // Front Green LED Pin Config
 #define LED_G3 3 // PortC Pin 3
@@ -16,10 +16,9 @@
 #define RED_STOP 250 // milliseconds
 #define RED_MOVE 500 //milliseconds
 #define GREEN_FLASH 300 //milliseconds
-#define GREEN_MOVE 250 //milliseconds
+#define GREEN_MOVE 250 //millisecondss
 
 void greenFlash(void);
-void clearAll(void);
 void initLED(void);
 void runningModeRed(void);
 void stationaryModeRed(void);

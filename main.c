@@ -12,22 +12,24 @@
 #define END_CHALLENGE 0x37
 
 //motor commands
-#define MOVEMENT 0b11
-#define DIRECTION 0b11100
-#define SPEED 0b1100000
+#define MOVEMENT  0b00000011
+#define DIRECTION 0b111100
+#define SPEED     0b01000000
 
 #define MSG_COUNT 2
 
-osMessageQueueId_t tAudioMsg, tMotorMsg, tGreenMsg, tRedMsg, tBrainMsg;
+osMessageQueueId_t tAudioMsg, tMotorMsg, tBrainMsg;
 
 //variable to store data received from UART
 uint8_t uartData;
+uint8_t receivedData;
 
 //UART2 Interrupt Request Handler
 void UART2_IRQHandler(void) 
 {
 	if (UART2->S1 & UART_S1_RDRF_MASK) {
 		rx_data = UART2->D;
+		
 		osMessageQueuePut(tBrainMsg, &rx_data, NULL, 0);
 	}
 }
@@ -46,13 +48,45 @@ void tAudio() {
 	}
 }
 
-void tMotor() {
-	uint8_t command = NODATA;
+void tGreen(){
+		uint8_t command = NODATA;
 	for(;;) {
 		//receive mesage and put it into command
 		osMessageQueueGet(tMotorMsg, &command, NULL, 0);
+		receivedData = command;
 		uint8_t mvmt = command & MOVEMENT;
-		uint8_t degree = (command & DIRECTION)>>2 ;
+		if (mvmt == 0b00){
+			stationaryModeGreen();
+		}
+		else{
+			runningModeGreen();
+		}
+}
+}
+void tRed(){
+		uint8_t command = NODATA;
+	for(;;) {
+		//receive mesage and put it into command
+		osMessageQueueGet(tMotorMsg, &command, NULL, 0);
+		receivedData = command;
+		uint8_t mvmt = command & MOVEMENT;
+		if (mvmt == 0b00){
+			stationaryModeRed();
+		}
+		else{
+			runningModeRed();
+		}
+}
+}
+void tMotor() {
+	uint8_t command = NODATA;
+	
+	for(;;) {
+		//receive mesage and put it into command
+		osMessageQueueGet(tMotorMsg, &command, NULL, 0);
+		receivedData = command;
+		uint8_t mvmt = command & MOVEMENT;
+		uint8_t degree = (command & DIRECTION) >> 2;
 		// for 4 speed (only usable with 6 degree
 		//uint8_t velocity = (command & SPEED) >>5;
 		
@@ -135,13 +169,13 @@ void tMotor() {
 		//BELOW IS 10DEGREE ABOVE IS 6 DEGREE
 		switch (velocity) {
 			case 0b0:
-				speed = 50;
+				speed = 20;
 				break;
 			case 0b1:				
-				speed = 100;
+				speed = 0;
 				break;		
 			default:
-				speed = 50;
+				speed = 100;
 			break;
 		}
 		switch (degree) {
@@ -157,13 +191,13 @@ void tMotor() {
 				left_ratio = 80;
 				right_ratio = 100; 
 
-
 				break;
 			
 			case 0b0010: 
 				left_ratio = 60;
 				right_ratio = 100; 
-				break;
+
+			break;
 
 			case 0b0011: 
 				left_ratio = 40;
@@ -177,13 +211,11 @@ void tMotor() {
 				left_ratio = 0;
 				right_ratio = 100; 
 				break;
-			
-			
+						
 			case 0b0110: 
 				left_ratio = 100;
 				right_ratio = 80; 
 				break;
-			
 			
 			case 0b0111: 
 				left_ratio = 100;
@@ -215,21 +247,25 @@ void tMotor() {
 		switch (mvmt) {
 			case 0b00:
 				//noMove
+			//stationaryModeGreen();
 				stopMotors();
 				break;
 			
 			case 0b01:
 				//forward
+			//runningModeGreen();
 				forward(left_ratio, right_ratio,speed);
 				break;
 			
 			case 0b10:
 				//back
+			//runningModeGreen();
 				reverse( left_ratio,right_ratio, speed);
 				break;
 			
 			default:
 				//noMove
+			//stationaryModeGreen();
 				stopMotors();
 		}
 
@@ -249,8 +285,6 @@ void tBrain() {
 			osMessageQueuePut(tAudioMsg, &uartData, NULL, 0);
 		}
 		
-        osMessageQueuePut(tGreenMsg, &uartData, NULL, 0);
-		osMessageQueuePut(tRedMsg, &uartData, NULL, 0);
 	}
 }
 
@@ -270,17 +304,19 @@ int main (void) {
 	initMotors();
  
 	osKernelInitialize();            
+	
 
 	osThreadNew(tBrain, NULL, NULL);    
     osThreadNew(tMotor, NULL, NULL);   
     osThreadNew(tAudio, NULL, NULL);    
+	osThreadNew(tGreen, NULL, NULL); 
+osThreadNew(tRed, NULL, NULL);     
 	
 	
 	tBrainMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
     tMotorMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
     tAudioMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
-    tGreenMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
-	tRedMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
+
 		
 	osKernelStart();                     
 	for (;;) {}
