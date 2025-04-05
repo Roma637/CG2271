@@ -31,14 +31,6 @@ void initLED(void) {
   
 }
 
-void greenThread(void *argument) {
-  while (1) {
-  //stationaryModeGreen();
-    runningModeGreen();
-  
-  }
-}
-
 
 void stationaryModeGreen(void)
 {
