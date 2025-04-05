@@ -9,16 +9,16 @@
 
 //null command
 #define NODATA 0x00
-#define END_CHALLENGE 0x37
 
 //motor commands
 #define MOVEMENT  0b00000011
 #define DIRECTION 0b111100
 #define SPEED     0b01000000
+#define END 0b10000000
 
 #define MSG_COUNT 2
 
-osMessageQueueId_t tAudioMsg, tMotorMsg, tBrainMsg;
+osMessageQueueId_t tAudioMsg, tMotorMsg, tBrainMsg, tGreenMsg, tRedMsg;
 
 //variable to store data received from UART
 uint8_t uartData;
@@ -39,8 +39,8 @@ void tAudio() {
 	for(;;) {
 		//receive mesage and put it into command
 		osMessageQueueGet(tAudioMsg, &command, NULL, osWaitForever);
-
-		if (command == END_CHALLENGE) {
+		uint8_t end = command & END;
+		if (end == 0b10000000) {
 			ending_tune();
 		} else {
             background_tune();
@@ -280,11 +280,12 @@ void tBrain() {
 		osMessageQueueGet(tBrainMsg, &uartData, NULL, osWaitForever);
 		//send uartData to corresponding thread
 		osMessageQueuePut(tMotorMsg, &uartData, NULL, 0);
-		
-		if (uartData == END_CHALLENGE) {
+		uint8_t end = command & END;
+		if (end == 0b10000000) {
 			osMessageQueuePut(tAudioMsg, &uartData, NULL, 0);
 		}
-		
+		osMessageQueuePut(tGreenMsg, &uartData, NULL, 0);
+		osMessageQueuePut(tRedMsg, &uartData, NULL, 0);
 	}
 }
 
@@ -316,7 +317,8 @@ osThreadNew(tRed, NULL, NULL);
 	tBrainMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
     tMotorMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
     tAudioMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
-
+	tGreenMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
+	tRedMsg = osMessageQueueNew(MSG_COUNT, sizeof(uint8_t), NULL);
 		
 	osKernelStart();                     
 	for (;;) {}
