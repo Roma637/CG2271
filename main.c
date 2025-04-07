@@ -18,6 +18,9 @@
 
 #define MSG_COUNT 2
 
+int isMoving = 0;
+int* ptr = &isMoving;
+
 osMessageQueueId_t tAudioMsg, tMotorMsg, tBrainMsg, tGreenMsg, tRedMsg;
 
 //variable to store data received from UART
@@ -52,14 +55,14 @@ void tGreen(){
 		uint8_t command = NODATA;
 	for(;;) {
 		//receive mesage and put it into command
-		osMessageQueueGet(tMotorMsg, &command, NULL, 0);
+		osMessageQueueGet(tGreenMsg, &command, NULL, 0);
 		receivedData = command;
-		uint8_t mvmt = command & MOVEMENT;
-		if (mvmt == 0b00){
-			stationaryModeGreen();
+		//uint8_t mvmt = command & MOVEMENT;
+		if (*ptr == 1){
+			runningModeGreen(ptr);
 		}
 		else{
-			runningModeGreen();
+			stationaryModeGreen();
 		}
 }
 }
@@ -67,10 +70,10 @@ void tRed(){
 		uint8_t command = NODATA;
 	for(;;) {
 		//receive mesage and put it into command
-		osMessageQueueGet(tMotorMsg, &command, NULL, 0);
+		osMessageQueueGet(tRedMsg, &command, NULL, 0);
 		receivedData = command;
-		uint8_t mvmt = command & MOVEMENT;
-		if (mvmt == 0b00){
+		//uint8_t mvmt = command & MOVEMENT;
+		if (*ptr == 0){
 			stationaryModeRed();
 		}
 		else{
@@ -169,13 +172,13 @@ void tMotor() {
 		//BELOW IS 10DEGREE ABOVE IS 6 DEGREE
 		switch (velocity) {
 			case 0b0:
-				speed = 20;
+				speed = 50;
 				break;
 			case 0b1:				
-				speed = 0;
+				speed = 100;
 				break;		
 			default:
-				speed = 100;
+				speed = 50;
 			break;
 		}
 		switch (degree) {
@@ -248,24 +251,28 @@ void tMotor() {
 			case 0b00:
 				//noMove
 			//stationaryModeGreen();
+			isMoving = 0;
 				stopMotors();
 				break;
 			
 			case 0b01:
 				//forward
 			//runningModeGreen();
+			isMoving = 1;
 				forward(left_ratio, right_ratio,speed);
 				break;
 			
 			case 0b10:
 				//back
 			//runningModeGreen();
+			isMoving = 1;
 				reverse( left_ratio,right_ratio, speed);
 				break;
 			
 			default:
 				//noMove
 			//stationaryModeGreen();
+			isMoving = 0;
 				stopMotors();
 		}
 
@@ -280,7 +287,7 @@ void tBrain() {
 		osMessageQueueGet(tBrainMsg, &uartData, NULL, osWaitForever);
 		//send uartData to corresponding thread
 		osMessageQueuePut(tMotorMsg, &uartData, NULL, 0);
-		uint8_t end = command & END;
+		uint8_t end = uartData & END;
 		if (end == 0b10000000) {
 			osMessageQueuePut(tAudioMsg, &uartData, NULL, 0);
 		}

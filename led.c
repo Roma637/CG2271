@@ -55,16 +55,19 @@ void runningModeRed(void)
 
 // works properly w normal delay
 // how to convert to osDelay??
-void runningModeGreen(void) {
+void runningModeGreen(int* ptr) {
   for (int i = 0; i < 8; i++) {
-      PTC->PSOR = MASK(greenLeds[i]);  
+		if(*ptr == 1){      
+			PTC->PSOR = MASK(greenLeds[i]);  
       osDelay(GREEN_MOVE);
       
       //turn LED off
-      PTC->PCOR = MASK(greenLeds[i]);
+      //PTC->PCOR = MASK(greenLeds[i]);
+      //osDelay(GREEN_MOVE);
+		PTC->PCOR = (MASK(LED_G3) | MASK(LED_G4) | MASK(LED_G5) | MASK(LED_G6) | MASK(LED_G7) | MASK(LED_G8) | MASK(LED_G9) | MASK(LED_G10));
       osDelay(GREEN_MOVE);
-      
+		}
+
   }
 }
-
 

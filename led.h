@@ -22,5 +22,5 @@ void greenFlash(void);
 void initLED(void);
 void runningModeRed(void);
 void stationaryModeRed(void);
-void runningModeGreen(void);
+void runningModeGreen(int*);
 void stationaryModeGreen(void);
