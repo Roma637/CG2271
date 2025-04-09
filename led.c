@@ -70,4 +70,3 @@ void runningModeGreen(int* ptr) {
 
   }
 }
-

@@ -17,9 +17,10 @@
 #define END 0b10000000
 
 #define MSG_COUNT 2
-
+int endAudioPlay = 0;
 int isMoving = 0;
 int* ptr = &isMoving;
+int* ptrAudio =&endAudioPlay;
 
 osMessageQueueId_t tAudioMsg, tMotorMsg, tBrainMsg, tGreenMsg, tRedMsg;
 
@@ -41,9 +42,9 @@ void tAudio() {
 	uint8_t command = NODATA;
 	for(;;) {
 		//receive mesage and put it into command
-		osMessageQueueGet(tAudioMsg, &command, NULL, osWaitForever);
-		uint8_t end = command & END;
-		if (end == 0b10000000) {
+		osMessageQueueGet(tAudioMsg, &command, NULL, 0);
+		
+		if (*ptrAudio ==1 ) {
 			ending_tune();
 		} else {
             background_tune();
@@ -90,8 +91,18 @@ void tMotor() {
 		receivedData = command;
 		uint8_t mvmt = command & MOVEMENT;
 		uint8_t degree = (command & DIRECTION) >> 2;
+		uint8_t end = command & END;
+		
 		// for 4 speed (only usable with 6 degree
 		//uint8_t velocity = (command & SPEED) >>5;
+		if(end == END){
+			endAudio =1;
+			endAudioPlay = 1;
+		}
+		else{
+			
+			endAudioPlay = 0;
+		}
 		
 		//for 2 speed 
 		uint8_t velocity = (command & SPEED) >>6;
@@ -191,7 +202,7 @@ void tMotor() {
 				break;
 			
 			case 0b0001: 
-				left_ratio = 80;
+				left_ratio = 60;
 				right_ratio = 100; 
 
 				break;
@@ -207,7 +218,7 @@ void tMotor() {
 				right_ratio = 100; 
 				break;
 			case 0b0100: 
-				left_ratio = 20;
+				left_ratio = 10;
 				right_ratio = 100; 
 				break;
 			case 0b0101: 
@@ -217,7 +228,7 @@ void tMotor() {
 						
 			case 0b0110: 
 				left_ratio = 100;
-				right_ratio = 80; 
+				right_ratio = 60; 
 				break;
 			
 			case 0b0111: 
@@ -231,7 +242,7 @@ void tMotor() {
 				break;
 			case 0b1001: 
 				left_ratio = 100;
-				right_ratio = 20; 
+				right_ratio = 10; 
 				break;
 			case 0b1010: 
 				left_ratio = 100;
@@ -244,6 +255,9 @@ void tMotor() {
 				break;
 			
 		}
+		
+		
+				
 		
 		
 		
@@ -287,10 +301,11 @@ void tBrain() {
 		osMessageQueueGet(tBrainMsg, &uartData, NULL, osWaitForever);
 		//send uartData to corresponding thread
 		osMessageQueuePut(tMotorMsg, &uartData, NULL, 0);
-		uint8_t end = uartData & END;
-		if (end == 0b10000000) {
+		//uint8_t end = uartData & END;
+		//if (end == 0b10000000) {
 			osMessageQueuePut(tAudioMsg, &uartData, NULL, 0);
-		}
+		//}
+		
 		osMessageQueuePut(tGreenMsg, &uartData, NULL, 0);
 		osMessageQueuePut(tRedMsg, &uartData, NULL, 0);
 	}

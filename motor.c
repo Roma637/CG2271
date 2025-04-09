@@ -83,4 +83,3 @@ void reverse(int left_ratio, int right_ratio,int speed) {
     TPM2_C1V = (int) (MOD_VAL * left_ratio /100)*speed/100;
 }
 
-

@@ -21,7 +21,7 @@ void play_note_jump(notes note, lengths length)
     TPM0->MOD = ClockFreq / freq[note];
   }
   TPM0_C0V = TPM0->MOD * 0.3;
-  if (rx_data == 0x37 || endAudio == 0x37) {
+  if (endAudio == 0x01) {
     off_audio();
     endAudio = 0;
     longjmp(jump_target, 1);
@@ -30,6 +30,7 @@ void play_note_jump(notes note, lengths length)
   // In this case, the BPM is 120
   // Length of crotchet = duration / 2, in this case is 12
   // Hence, 60 / (120*12) * 1000 = 41.666 = 42
+	// delay_interruptible(42 * len[length]);
   osDelay(42*len[length]);
 }
 
@@ -43,6 +44,8 @@ void play_note(notes note, lengths length)
   TPM0_C0V = TPM0->MOD * 0.3;
   osDelay(42*len[length]);
 }
+
+
 
 void off_audio()
 {
