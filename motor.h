@@ -14,6 +14,6 @@
 
 void initMotors(void);
 void stopMotors(void);
-void forward(int left_ratio, int right_ratio,int speed);
-void reverse(int left_ratio, int right_ratio,int speed);
+void forward(int left_ratio, int right_ratio,int speed,int left_inverse_ratio, int right_inverse_ratio);
+void reverse(int left_ratio, int right_ratio,int speed,int left_inverse_ratio, int right_inverse_ratio);
 

@@ -108,6 +108,8 @@ void tMotor() {
 		uint8_t velocity = (command & SPEED) >>6;
 		int left_ratio ;
 		int right_ratio ;
+		int left_inverse_ratio;
+		int right_inverse_ratio;
 		int speed;
 		/**
 	switch (velocity) {
@@ -183,13 +185,13 @@ void tMotor() {
 		//BELOW IS 10DEGREE ABOVE IS 6 DEGREE
 		switch (velocity) {
 			case 0b0:
-				speed = 50;
+				speed = 65;
 				break;
 			case 0b1:				
 				speed = 100;
 				break;		
 			default:
-				speed = 50;
+				speed = 65;
 			break;
 		}
 		switch (degree) {
@@ -197,56 +199,79 @@ void tMotor() {
 
 			case 0b0000: 
 				left_ratio = 100;
-				right_ratio = 100; 
+				right_ratio = 100;
+				left_inverse_ratio =0;
+				right_inverse_ratio = 0;
+			
 
 				break;
 			
 			case 0b0001: 
-				left_ratio = 60;
+				left_ratio = 20;
 				right_ratio = 100; 
+		  	left_inverse_ratio =0;
+				right_inverse_ratio = 0;
 
 				break;
 			
 			case 0b0010: 
-				left_ratio = 60;
+				left_ratio = 10;
 				right_ratio = 100; 
+		  	left_inverse_ratio =0;
+				right_inverse_ratio = 0;
 
 			break;
 
 			case 0b0011: 
-				left_ratio = 40;
+				left_ratio = 0;
 				right_ratio = 100; 
+	  		left_inverse_ratio =0;
+				right_inverse_ratio = 0;
 				break;
 			case 0b0100: 
-				left_ratio = 10;
+				left_ratio = 0;
 				right_ratio = 100; 
+		  	left_inverse_ratio =10;
+				right_inverse_ratio = 0;
 				break;
 			case 0b0101: 
 				left_ratio = 0;
 				right_ratio = 100; 
+				left_inverse_ratio = 30;
+				right_inverse_ratio = 0;
 				break;
 						
 			case 0b0110: 
 				left_ratio = 100;
-				right_ratio = 60; 
+				right_ratio = 20; 
+				left_inverse_ratio = 0;
+				right_inverse_ratio = 0;
 				break;
 			
 			case 0b0111: 
 				left_ratio = 100;
-				right_ratio = 60; 
+				right_ratio = 10; 
+				left_inverse_ratio = 0;
+				right_inverse_ratio = 0;
 				break;
 
 			case 0b1000: 
 				left_ratio = 100;
-				right_ratio = 40; 
+				right_ratio = 0; 
+				left_inverse_ratio = 0;
+				right_inverse_ratio = 0;
 				break;
 			case 0b1001: 
 				left_ratio = 100;
-				right_ratio = 10; 
+				right_ratio = 0; 
+				left_inverse_ratio = 0;
+				right_inverse_ratio = 10;
 				break;
 			case 0b1010: 
 				left_ratio = 100;
 				right_ratio = 0; 
+			left_inverse_ratio = 0;
+				right_inverse_ratio = 30;
 				break;
 			
 			default:
@@ -273,14 +298,14 @@ void tMotor() {
 				//forward
 			//runningModeGreen();
 			isMoving = 1;
-				forward(left_ratio, right_ratio,speed);
+				forward(left_ratio, right_ratio,speed,left_inverse_ratio,right_inverse_ratio);
 				break;
 			
 			case 0b10:
 				//back
 			//runningModeGreen();
 			isMoving = 1;
-				reverse( left_ratio,right_ratio, speed);
+				reverse( left_ratio,right_ratio, speed,left_inverse_ratio,right_inverse_ratio);
 				break;
 			
 			default:
