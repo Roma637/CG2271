@@ -3,13 +3,49 @@
 #include "audio.h"
 #include <setjmp.h>
 #include "Serial_ISR.h"
+#define Pink1 B4
+#define Orange2 D5
+#define Blue1 A4
+#define Green1 F4
+#define LGreen2 F5
+#define Yellow2 E5
+#define Purple2 As5
+#define Pink2 B5
+#define Blue2 A5
+#define Orange1 C5
+#define LGreen1 F5
+#define Purple1 As5
+#define Green2 F5
+#define Red1 E5
+#define Yellow1 E5
+#define White Rest
+
+const notes melody[] = {
+  Pink1, Rest, Pink1, Rest, Pink1, Blue1, Rest, Pink1, Rest,
+  Orange2, Rest, Pink1, Rest, Green1, Blue1, Rest, Pink1,Rest,
+  Pink1, Rest, Pink1, Rest, Pink1, Blue1, Rest, Pink1, Rest,
+  Orange2, Rest, Pink1, Rest, Green1, Blue1, Rest, Pink1,Rest
+   
+};
+
+
 
 int len[5] = {duration, duration/2, duration/4, duration/6, duration/8};
-int freq[SIZE] = {0, 
-                                           196, 208,       233,
-                  262, 294, 311, 330, 349, 392, 415, 440, 466, 494,
-                  523, 587, 622, 659, 698, 784, 831, 880, 932, 988,
-                  1047}; 
+
+int freq[] = {
+    0,     // Rest
+    // Octave 3
+    130, 138, 146, 155, 164, 174, 185, 196, 207, 220, 233, 246,
+    // Octave 4
+    261, 277, 293, 311, 329, 349, 369, 392, 415, 440, 466, 493,
+    // Octave 5
+    523, 554, 587, 622, 659, 698, 739, 783, 830, 880, 932, 987,
+    // Octave 6
+    1046, 1108, 1174, 1244, 1318, 1396, 1480, 1568, 1661, 1760, 1864, 1975,
+    // Octave 7
+    2093, 2217, 2349, 2489, 2637, 2793, 2960, 3136, 3322, 3520, 3729, 3951
+};
+
 jmp_buf jump_target;
 
 // TODO: Change delay function such that the functions can end whenever
@@ -67,116 +103,20 @@ void background_tune(void)
   //melody loop
   // Might need to loop indefinitely
   while (setjmp(jump_target) == 0) {
-    //bar 3
-    play_note_jump(E5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(G5, triplet);
-    
-    play_note_jump(A5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(G5, triplet);
-    
-    play_note_jump(G5, crotchet);
-    
-    play_note_jump(Rest, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(A5, triplet);
-    
-    //bar 4
-    play_note_jump(B5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(C6, triplet);
-    
-    play_note_jump(B5, triplet);
-    play_note_jump(Bb5, triplet);
-    play_note_jump(A5, triplet);
-    
-    play_note_jump(A5, crotchet);
-    
-    play_note_jump(Rest, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Eb5, triplet);
-    
-    //bar 5
-    play_note_jump(E5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(G5, triplet);
-    
-    play_note_jump(A5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(G5, triplet);
-    
-    play_note_jump(G5, crotchet);
-    
-    play_note_jump(Rest, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Ab5, triplet);
-    
-    //bar 6
-    play_note_jump(A5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Bb5, triplet);
-    
-    play_note_jump(A5, triplet);
-    play_note_jump(Ab5, triplet);
-    play_note_jump(G5, triplet);
-    
-    play_note_jump(G5, crotchet);
-    
-    play_note_jump(Rest, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Ab5, triplet);
-    
-    //bar 7
-    play_note_jump(A5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(B5, triplet);
-    
-    play_note_jump(C6, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(A5, triplet);
-    
-    play_note_jump(A5, crotchet);
-    
-    play_note_jump(Rest, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Ab5, triplet);
-    
-    //bar 8
-    play_note_jump(G5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(Ab5, triplet);
-    
-    play_note_jump(A5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(E5, triplet);
-    
-    play_note_jump(E5, crotchet);
-    
-    play_note_jump(Rest, crotchet);
-    
-    //bar 9
-    play_note_jump(E5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(C5, triplet);
-    
-    play_note_jump(A4, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(E5, triplet);
-    
-    play_note_jump(C5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(A4, triplet);
-		play_note_jump(C5, triplet);
-    play_note_jump(Rest, triplet);
-    play_note_jump(G5, triplet);
-    
-    //bar 10
-    play_note_jump(G5, minim);
-    
-    play_note_jump(G5, crotchet);
-    
-    play_note_jump(Rest, quaver);
+
+for (int i = 0; i < sizeof(melody); i++) {
+	if(melody[i]== Rest){
+		play_note_jump(melody[i],semiquaver);
+	}
+	else{
+  play_note_jump(melody[i],semiquaver);
+	}
+}
+
+
+//play_note_jump(Rest,minim);  //A rest to separate the phrases
+
+
   }
 }
 
