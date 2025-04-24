@@ -3,7 +3,7 @@
 #include <math.h>
 
 
-#define UART_BAUD_RATE 115200
+#define UART_BAUD_RATE 9600
 #define SERIAL_BAUD_RATE 115200
 
 
@@ -101,6 +101,8 @@ void dumpGamepad(ControllerPtr ctl) {
   );
 }
 
+
+//functons to alter message byte
 void callStop() {
   message &= ~(0b11);
 }
@@ -113,46 +115,46 @@ void callBackward() {
   message |= DIRECTION_REVERSE;
 }
 void callCentre() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
 }
 void callLeftD1() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (1 << 2);
 }
 void callLeftD2() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (2 << 2);
 }
 void callLeftD3() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (3 << 2);
 }
 void callLeftD4() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (4 << 2);
 }
 void callLeftD5() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (5 << 2);
 }
 void callRightD1() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (6 << 2);
 }
 void callRightD2() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (7 << 2);
 }
 void callRightD3() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (8 << 2);
 }
 void callRightD4() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (9 << 2);
 }
 void callRightD5() {
-  message &= ~(0b111 << 2);
+  message &= ~(0b1111 << 2);
   message |= (10 << 2);
 }
 void callGameOver() {
@@ -167,7 +169,7 @@ void setSpeedMessage() {
 }
 void x_debounce() {
   x_count += 1;
-  if (x_count >= 70) {
+  if (x_count >= 35) {
     x_flag = 0;
     x_count = 0;
   }
@@ -201,9 +203,9 @@ void processGamepad(ControllerPtr ctl) {
   x_debounce();
   y_debounce();
   //
-  setSpeedMessage();
 
 
+// process buttons and call functions
   if (ctl->buttons() != BUTTON_A && ctl->buttons() != BUTTON_B ) {
     callStop();
   }
@@ -267,7 +269,7 @@ void processGamepad(ControllerPtr ctl) {
   }
 
   //  dumpGamepad(ctl);
-  Serial2.write(&message, 1);
+  Serial2.write(message);
   Serial.println(message, BIN);
 }
 
