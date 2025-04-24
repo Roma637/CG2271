@@ -26,7 +26,6 @@ void initLED(void) {
       PORTC->PCR[greenLeds[i]] &= ~PORT_PCR_MUX_MASK;
       PORTC->PCR[greenLeds[i]] |= PORT_PCR_MUX(1);  // GPIO mode
       PTC->PDDR |= MASK(greenLeds[i]);            // Set pin as output
-    //  PTC->PSOR = MASK(greenLeds[i]);
   }
   
 }
@@ -53,17 +52,11 @@ void runningModeRed(void)
   osDelay(RED_MOVE);
 }
 
-// works properly w normal delay
-// how to convert to osDelay??
 void runningModeGreen(int* ptr) {
   for (int i = 0; i < 8; i++) {
 		if(*ptr == 1){      
 			PTC->PSOR = MASK(greenLeds[i]);  
       osDelay(GREEN_MOVE);
-      
-      //turn LED off
-      //PTC->PCOR = MASK(greenLeds[i]);
-      //osDelay(GREEN_MOVE);
 		PTC->PCOR = (MASK(LED_G3) | MASK(LED_G4) | MASK(LED_G5) | MASK(LED_G6) | MASK(LED_G7) | MASK(LED_G8) | MASK(LED_G9) | MASK(LED_G10));
       osDelay(GREEN_MOVE);
 		}

@@ -4,6 +4,7 @@
 #define SIZE 59
 #define duration 24
 
+//note bank
 typedef enum {
     Rest,  // Silence
     // Octave 3

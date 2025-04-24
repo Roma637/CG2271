@@ -20,7 +20,7 @@
 #define Yellow1 E5
 #define White Rest
 
-const notes melody[] = {
+const notes melody[] = { // golden wind starting melody
   Pink1, Rest, Pink1, Rest, Pink1, Blue1, Rest, Pink1, Rest,
   Orange2, Rest, Pink1, Rest, Green1, Blue1, Rest, Pink1,Rest,
   Pink1, Rest, Pink1, Rest, Pink1, Blue1, Rest, Pink1, Rest,
@@ -48,7 +48,7 @@ int freq[] = {
 
 jmp_buf jump_target;
 
-// TODO: Change delay function such that the functions can end whenever
+// play note but allow interrupts
 void play_note_jump(notes note, lengths length)
 {
   if (note == Rest) {
@@ -62,14 +62,9 @@ void play_note_jump(notes note, lengths length)
     endAudio = 0;
     longjmp(jump_target, 1);
   }
-  // 60 / (BPM * length of crotchet) * 1000
-  // In this case, the BPM is 120
-  // Length of crotchet = duration / 2, in this case is 12
-  // Hence, 60 / (120*12) * 1000 = 41.666 = 42
-	// delay_interruptible(42 * len[length]);
   osDelay(42*len[length]);
 }
-
+// play mode but dont allow interrupts
 void play_note(notes note, lengths length)
 {
   if (note == Rest) {
@@ -104,7 +99,7 @@ void background_tune(void)
   // Might need to loop indefinitely
   while (setjmp(jump_target) == 0) {
 
-for (int i = 0; i < sizeof(melody); i++) {
+for (int i = 0; i < sizeof(melody); i++) { // calls array of golden wind melody
 	if(melody[i]== Rest){
 		play_note_jump(melody[i],semiquaver);
 	}
@@ -113,14 +108,10 @@ for (int i = 0; i < sizeof(melody); i++) {
 	}
 }
 
-
-//play_note_jump(Rest,minim);  //A rest to separate the phrases
-
-
   }
 }
 
-void ending_tune(void)
+void ending_tune(void) // mario ending tune
 {
   //bar 1
   play_note(G3, triplet);

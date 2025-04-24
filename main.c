@@ -44,7 +44,7 @@ void tAudio() {
 		//receive mesage and put it into command
 		osMessageQueueGet(tAudioMsg, &command, NULL, 0);
 		
-		if (*ptrAudio ==1 ) {
+		if (*ptrAudio ==1 ) { // checks flag for sending toggling audio
 			ending_tune();
 		} else {
             background_tune();
@@ -58,8 +58,7 @@ void tGreen(){
 		//receive mesage and put it into command
 		osMessageQueueGet(tGreenMsg, &command, NULL, 0);
 		receivedData = command;
-		//uint8_t mvmt = command & MOVEMENT;
-		if (*ptr == 1){
+		if (*ptr == 1){ // check ptr for triggering led colour
 			runningModeGreen(ptr);
 		}
 		else{
@@ -73,7 +72,6 @@ void tRed(){
 		//receive mesage and put it into command
 		osMessageQueueGet(tRedMsg, &command, NULL, 0);
 		receivedData = command;
-		//uint8_t mvmt = command & MOVEMENT;
 		if (*ptr == 0){
 			stationaryModeRed();
 		}
@@ -94,7 +92,6 @@ void tMotor() {
 		uint8_t end = command & END;
 		
 		// for 4 speed (only usable with 6 degree
-		//uint8_t velocity = (command & SPEED) >>5;
 		if(end == END){
 			endAudio =1;
 			endAudioPlay = 1;
@@ -111,78 +108,9 @@ void tMotor() {
 		int left_inverse_ratio;
 		int right_inverse_ratio;
 		int speed;
-		/**
-	switch (velocity) {
-			case 0b00:
-				speed = 40;
-				break;
-			case 0b01:				
-				speed = 60;
-				break;		
-			case 0b10:
-				
-				speed = 80;
-				break;
-			
-			case 0b11:
-				
-				speed = 100;
-				break;
-			
-			default:
-				speed = 40;
-			break;
-		}
-		switch (degree) {
-			
-
-			case 0b000: 
-				left_ratio = 100;
-				right_ratio = 100; 
-
-				break;
-			
-			case 0b001: 
-				left_ratio = 60;
-				right_ratio = 100; 
-
-
-				break;
-			
-			case 0b010: 
-				left_ratio = 40;
-				right_ratio = 100; 
-				break;
-
-			case 0b011: 
-				left_ratio = 0;
-				right_ratio = 100; 
-				break;
-			
-			
-			case 0b100: 
-				left_ratio = 100;
-				right_ratio = 60; 
-				break;
-			
-			case 0b101:
-				left_ratio = 100;
-				right_ratio = 40; 
-				break;
-
-			case 0b110: 
-				left_ratio = 100;
-				right_ratio = 0; 
-				break;
-			
-			default:
-				left_ratio = 100;
-				right_ratio = 100; 
-				break;
-			
-		}**/
 		
-		//BELOW IS 10DEGREE ABOVE IS 6 DEGREE
+		
+		//recieving velocity bits and relating them to speed ratio
 		switch (velocity) {
 			case 0b0:
 				speed = 65;
@@ -194,6 +122,8 @@ void tMotor() {
 				speed = 65;
 			break;
 		}
+		
+		// recieving degree bits and converting them into ratio of each motor
 		switch (degree) {
 			
 
@@ -285,32 +215,28 @@ void tMotor() {
 				
 		
 		
-		
+		// call each movement 
 		switch (mvmt) {
 			case 0b00:
 				//noMove
-			//stationaryModeGreen();
 			isMoving = 0;
 				stopMotors();
 				break;
 			
 			case 0b01:
 				//forward
-			//runningModeGreen();
 			isMoving = 1;
 				forward(left_ratio, right_ratio,speed,left_inverse_ratio,right_inverse_ratio);
 				break;
 			
 			case 0b10:
 				//back
-			//runningModeGreen();
 			isMoving = 1;
 				reverse( left_ratio,right_ratio, speed,left_inverse_ratio,right_inverse_ratio);
 				break;
 			
 			default:
 				//noMove
-			//stationaryModeGreen();
 			isMoving = 0;
 				stopMotors();
 		}
